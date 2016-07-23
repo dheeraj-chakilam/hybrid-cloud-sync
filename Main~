@@ -1,0 +1,53 @@
+#! /usr/bin/python
+
+import Settings
+import subprocess
+import Configurer
+import os
+
+#A function to simplify running commands in the terminal using subprocess module
+def ccall(command):
+	subprocess.call(command, shell="true")
+
+##Determine whether this is the startup or shutdown
+print "1. Computer Startup"
+print "2. Computer Shutdown"
+opt = raw_input("Please select your option:")
+idir = Configurer.config.get('Installation', 'dir_loc')
+cdir = Configurer.config.get('CloudStorage', 'dir_loc')
+sydir = Configurer.config.options('SyncDirectories')
+
+#Trying to find out the number of Sync Directories to patch those many directories
+n = int(sydir.pop()[-1:])
+
+if opt == "1":
+#Check if delta files exist and patch
+	temp = cdir + "/Delta1.det"
+	if os.path.isfile(temp):
+		i = 1
+		while (i <= n):
+			sdir = Configurer.config.get('SyncDirectories', 'dir_loc' + str(i))
+			ccall("rdiffdir patch " + sdir + " " + cdir + "/Delta" + str(i) + ".det")
+			os.remove(cdir + "/Delta" + str(i) + ".det")
+			i = i+1
+
+# if no delta files exist, proceed to create signature files from their initial status
+	i = 1
+	while (i <= n):
+		sdir = Configurer.config.get('SyncDirectories', 'dir_loc' + str(i))
+		ccall("rdiffdir signature " + sdir + " " + idir + "/Signature" + str(i) +".sig")
+		i = i+1
+
+elif opt == "2":
+	i = 1
+# create delta files at shutdown in cloud storage
+	while (i <= n):
+		sdir = Configurer.config.get('SyncDirectories', 'dir_loc' + str(i))
+		ccall("rdiffdir delta " + idir + "/Signature" + str(i) + ".sig " + sdir + " " + cdir + "/Delta" + str(i) + ".det")
+		i = i+1
+#delete the signature files created previously as delta files have been created
+	i = 1
+	while (i <= n):
+		os.remove(idir + "/Signature" + str(i) + ".sig")
+		i = i+1
+	i = 1

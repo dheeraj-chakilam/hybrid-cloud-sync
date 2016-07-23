@@ -1,0 +1,20 @@
+import ConfigParser
+
+config = ConfigParser.ConfigParser()
+config.readfp(open('Settings.cfg'))
+
+def Add():
+	config.add_section('SyncDirectories')
+	dirloc = raw_input("Please enter the directory location:")
+	with open('Settings.cfg', 'wb') as configfile:	
+		config.set('SyncDirectories', 'directory_location', dirloc)
+		config.write(configfile)
+
+def main():
+	if config.has_section('SyncDirectories'):
+		print "Aye"
+	else:
+		Add()
+
+if __name__ == "__main__":
+	main()

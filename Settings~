@@ -1,0 +1,31 @@
+#! /usr/bin/python
+
+import ConfigParser
+import SyncDirectories
+
+config = ConfigParser.ConfigParser()
+config.readfp(open('Settings.cfg'))
+
+# Functions
+def CloudStorage_Main():
+	return
+
+def Status_Main():
+	return
+
+def Status_Logs():
+	return
+## End 
+
+print "List of operations:"
+print "1. View or edit directories to synchronize"
+print "2. View or edit intermediate cloud storage location"
+print "3. Check status of synchronization"
+print "4. View logs"
+opt = raw_input("Please select your option:")
+{
+'1': SyncDirectories.main(),
+'2': CloudStorage_Main(),
+'3': Status_Main(),
+'4': Status_Logs(),
+}.get(opt)
